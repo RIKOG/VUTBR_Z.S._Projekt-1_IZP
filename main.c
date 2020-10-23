@@ -16,9 +16,11 @@ void dcol(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int dl
 
 void dcols(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int command_stlpec_do, int dlzka_tabulky);
 
+void cset(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *dlzka_tabulky, char STR[]);
+
 
 int main(int argc, char *argv[]) {
-    char delimiter = 0, tabulka[MAX] = {0};
+    char delimiter = 0, tabulka[MAX] = {0}, STR[MAX] = {0};
     int i = 0, riadok = 0, stlpec = 0, command_riadok = 0, command_riadok_do = 0, command_stlpec = 0, command_stlpec_do = 0, dlzka_tabulky = 0, pomocna_stlpec = 0, pomocna_riadok = 0;
     char argument_irow[MAX] = "irow";
     char argument_arow[MAX] = "arow";
@@ -29,8 +31,10 @@ int main(int argc, char *argv[]) {
     char argument_dcol[MAX] = "dcol";
     char argument_dcols[MAX] = "dcols";
 
-//    printf("\n-----------------------------------\n%s", tabulka);
-    i = 0;
+    char argument_cset[MAX] = "cset";
+    char argument_tolower[MAX] = "tolower";
+    char argument_toupper[MAX] = "toupper";
+    char argument_round[MAX] = "round";
     while (1) {
         i = 0;
         while (i < argc) {
@@ -70,13 +74,16 @@ int main(int argc, char *argv[]) {
                 }
                 command_riadok = 0;
             } else if (strcmp(argv[i], argument_drows) == 0) {
-                command_riadok = (*argv[++i] - '0') + 1;    //magickych +1 pretoze nechcem vymazat prvy riadok ktory je len na upresnenie co presne aky stlpec je ake data
-                command_riadok_do = (*argv[++i] - '0') + 1;//magickych +1 pretoze nechcem vymazat prvy riadok ktory je len na upresnenie co presne aky stlpec je ake data
+                command_riadok = (*argv[++i] - '0') +
+                                 1;    //magickych +1 pretoze nechcem vymazat prvy riadok ktory je len na upresnenie co presne aky stlpec je ake data
+                command_riadok_do = (*argv[++i] - '0') +
+                                    1;//magickych +1 pretoze nechcem vymazat prvy riadok ktory je len na upresnenie co presne aky stlpec je ake data
                 if (delimiter != 0 && tabulka[0] != '\0') {
-                    if (command_riadok > 1 && command_riadok <= riadok) { //todo odstranit tieto podmienky nakolko su pravdepodobne zbytocne
-                        if(riadok <= command_riadok_do){
-                        tabulka[0] = '\0';
-                        pomocna_riadok--;
+                    if (command_riadok > 1 &&
+                        command_riadok <= riadok) { //todo odstranit tieto podmienky nakolko su pravdepodobne zbytocne
+                        if (riadok <= command_riadok_do) {
+                            tabulka[0] = '\0';
+                            pomocna_riadok--;
                         }
                     }
                 }
@@ -88,6 +95,7 @@ int main(int argc, char *argv[]) {
                     icol(tabulka, &stlpec, delimiter, command_stlpec, dlzka_tabulky);
                     if (command_stlpec > 0 && command_stlpec <= stlpec) {
                         pomocna_stlpec++;
+                        dlzka_tabulky++;
                     }
 //                printf("\nriadok: %d, stlpec: %d\n", riadok, stlpec);
                     command_stlpec = 0;
@@ -96,6 +104,7 @@ int main(int argc, char *argv[]) {
                 if (delimiter != 0 && tabulka[0] != '\0') {
                     acol(tabulka, delimiter, dlzka_tabulky);
                     pomocna_stlpec++;
+                    dlzka_tabulky++;
                 }
             } else if (strcmp(argv[i], argument_dcol) == 0) {
                 command_stlpec = (*argv[++i] - '0');                      //pretypovanie
@@ -103,6 +112,7 @@ int main(int argc, char *argv[]) {
                     dcol(tabulka, &stlpec, delimiter, command_stlpec, dlzka_tabulky);
                     if (command_stlpec > 0 && command_stlpec <= stlpec) {
                         pomocna_stlpec--;
+                        dlzka_tabulky--;
                     }
 //                printf("\nriadok: %d, stlpec: %d\n", riadok, stlpec);
                     command_stlpec = 0;
@@ -115,16 +125,25 @@ int main(int argc, char *argv[]) {
                     if (command_stlpec > 0 && command_stlpec <= stlpec && command_stlpec_do <= stlpec &&
                         command_stlpec_do >= command_stlpec) {
                         pomocna_stlpec -= command_stlpec_do - command_stlpec + 1;
+                        dlzka_tabulky -= command_stlpec_do - command_stlpec + 1;
                     }
 //                printf("\nriadok: %d, stlpec: %d\n", riadok, stlpec);
                     command_stlpec = 0;
                     command_stlpec_do = 0;
                 }
+            } else if (strcmp(argv[i], argument_cset) == 0) { //TODO Vymysliet v podmienkach ako sa popasovat s chybnymi argumentami, napriklad cset cislo bez STR
+                command_stlpec = (*argv[++i] - '0');
+                if (delimiter != 0 && tabulka[0] != '\0') {
+                    strcpy(STR, argv[++i]);
+                    cset(tabulka, &stlpec, delimiter, command_stlpec, &dlzka_tabulky, STR);
+                }
+                command_stlpec = 0;
+                STR[0] = '\0';
             }
             i++;
-        }                                                                                       //TODO Podmienku ze ked neni vobec ziaden arguemnt nech aspon vypise obsah, inak vypis klasicky vo funkciach
+        }
         if (tabulka[0] != '\0') {
-            printf("%s\t\t\triadok: %d, stlpec: %d\n", tabulka, riadok + pomocna_riadok, stlpec + pomocna_stlpec);
+            printf("%s\t\t\triadok: %d, stlpec: %d dlzka_tabulky: %d\n", tabulka, riadok + pomocna_riadok, stlpec + pomocna_stlpec, dlzka_tabulky);
         }
     }
     return 0;
@@ -222,4 +241,41 @@ void dcols(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int c
     } else {
         printf("Zle zadany command_stlpec (command_stlpec <= 0 || command_stlpec > *stlpec || command_stlpec_do > *stlpec || command_stlpec_do < command_stlpec)\n");
     }
+}
+
+void cset(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *dlzka_tabulky, char STR[]) {
+    int i = 0, j = 0, kontrola = 1;
+    char pomocna_tabulka[MAX] = {0};
+    if (command_stlpec > 0 && command_stlpec <= *stlpec) {
+        while (i < *dlzka_tabulky) {
+            if (tabulka[i] == delimiter) {                  // ak narazime na delimiter posunieme znacenie stlpcov(kontrola) o jedno dopredu
+                ++kontrola;
+            }
+            if (kontrola == command_stlpec) {               // ak narazime na stlpec ktory chceme menit
+                if(kontrola > 1){
+                    pomocna_tabulka[j++] = delimiter;       // ak menime iny, nez prvy riadok tak potrebujeme dat na zaciatok upraveneho stlpca delimiter kvoli sposobu akym implementujem riesenie
+                }
+                for (int p = 0; p < strlen(STR); p++){      // nakopirujem string do stlpca
+                    pomocna_tabulka[j++] = STR[p];
+                }
+                ++i;                                        // skocim o jeden index dopredu aby som sa nenachdzal na delimitri
+                while(tabulka[i] != delimiter){             // v originalnej tabulke preskocim stlpec ktory som v pomocnej tabulke menil
+                    if(i == *dlzka_tabulky){                // ak sa jedna uz o posledny stlpec tak nikdy nenarazi na delimiter, co znamena ze musi zabranit nekonecnemu zacykleniu
+                        break;
+                    }
+                    i++;
+                }
+                ++kontrola;                                 // kontrola nam znaci na ktorom stlpci sa nachdzame, nakolko sme teraz jeden stlpec spracovali posunieme sa o jeden dopredu
+            }
+            pomocna_tabulka[j] = tabulka[i];                // prekopirujeme chary ktoré nijako nemeníme do pomocnej tabulky
+            j++;
+            i++;
+        }
+        strcpy(tabulka, pomocna_tabulka);                   // prekopirujeme si zmeny do originalnej tabulky aby sa zmeny prejavili v maine v hlavnom while cykle
+        *dlzka_tabulky = strlen(pomocna_tabulka);           // zmenime dlzku tabulky na novu dlzku
+    }
+    else{
+        printf("Zle zadany command_stlpec (command_stlpec <= 0 || command_stlpec > *stlpec)\n");
+    }
+//    *dlzka_tabulky = 0;
 }
