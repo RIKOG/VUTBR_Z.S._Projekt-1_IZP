@@ -18,6 +18,12 @@ void dcols(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int c
 
 void cset(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *dlzka_tabulky, char STR[]);
 
+void toLower(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int dlzka_tabulky);
+
+void toUpper(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int dlzka_tabulky);
+
+void Round(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int dlzka_tabulky);
+
 
 int main(int argc, char *argv[]) {
     char delimiter = 0, tabulka[MAX] = {0}, STR[MAX] = {0};
@@ -139,6 +145,24 @@ int main(int argc, char *argv[]) {
                 }
                 command_stlpec = 0;
                 STR[0] = '\0';
+            } else if (strcmp(argv[i], argument_tolower) == 0) {
+                command_stlpec = (*argv[++i] - '0');
+                if (delimiter != 0 && tabulka[0] != '\0') {
+                    toLower(tabulka, &stlpec, delimiter, command_stlpec, dlzka_tabulky);
+                }
+                command_stlpec = 0;
+            } else if (strcmp(argv[i], argument_toupper) == 0) {
+                command_stlpec = (*argv[++i] - '0');
+                if (delimiter != 0 && tabulka[0] != '\0') {
+                    toUpper(tabulka, &stlpec, delimiter, command_stlpec, dlzka_tabulky);
+                }
+                command_stlpec = 0;
+            } else if (strcmp(argv[i], argument_round) == 0) {
+                command_stlpec = (*argv[++i] - '0');
+                if (delimiter != 0 && tabulka[0] != '\0') {
+                    Round(tabulka, &stlpec, delimiter, command_stlpec, dlzka_tabulky);
+                }
+                command_stlpec = 0;
             }
             i++;
         }
@@ -277,5 +301,84 @@ void cset(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *d
     else{
         printf("Zle zadany command_stlpec (command_stlpec <= 0 || command_stlpec > *stlpec)\n");
     }
-//    *dlzka_tabulky = 0;
+}
+
+void toLower(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int dlzka_tabulky){
+    int i = 0, kontrola = 1;
+    if (command_stlpec > 0 && command_stlpec <= *stlpec) {
+        while (i < dlzka_tabulky) {
+            if (tabulka[i] == delimiter) {                  // ak narazime na delimiter posunieme znacenie stlpcov(kontrola) o jedno dopredu
+                ++kontrola;
+            }
+            if (kontrola == command_stlpec) {               // ak narazime na stlpec ktory chceme menit
+                if(tabulka[i] >= 'A' && tabulka[i] <= 'Z'){
+                    tabulka[i] = tabulka[i] + 32;
+                }
+            }
+            i++;
+        }
+    }
+    else{
+        printf("Zle zadany command_stlpec (command_stlpec <= 0 || command_stlpec > *stlpec)\n");
+    }
+}
+
+void toUpper(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int dlzka_tabulky){
+    int i = 0, kontrola = 1;
+    if (command_stlpec > 0 && command_stlpec <= *stlpec) {
+        while (i < dlzka_tabulky) {
+            if (tabulka[i] == delimiter) {                  // ak narazime na delimiter posunieme znacenie stlpcov(kontrola) o jedno dopredu
+                ++kontrola;
+            }
+            if (kontrola == command_stlpec) {               // ak narazime na stlpec ktory chceme menit
+                if(tabulka[i] >= 'a' && tabulka[i] <= 'z'){
+                    tabulka[i] = tabulka[i] - 32;
+                }
+            }
+            i++;
+        }
+    }
+    else{
+        printf("Zle zadany command_stlpec (command_stlpec <= 0 || command_stlpec > *stlpec)\n");
+    }
+}
+
+void Round(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int dlzka_tabulky){  //123.4 zaokruhli na 123 ... 123.5 zaukruhli na 124 ... -123.4 zaokruhli na -123 ... -123.5 zaokruhli na -124
+    int i = 0, j = 0, kontrola = 1, pomocne_cislo = 0, necele_cislo = 0;
+    char cislo[MAX] = {0}, *pointer;
+    if (command_stlpec > 0 && command_stlpec <= *stlpec) {
+        while (i < dlzka_tabulky) {
+            if (tabulka[i] == delimiter) {                          // ak narazime na delimiter posunieme znacenie stlpcov(kontrola) o jedno dopredu
+                ++kontrola;
+            }
+            if (kontrola == command_stlpec) {                       // ak narazime na stlpec ktory chceme menit
+                ++i;
+                while(tabulka[i] != delimiter){                     //TODO tu mam vyriesene char to int number, aplikovat vsade v main funkcii
+                    if(tabulka[i] == '.' || tabulka[i] == ','){     //kedze sme dostali argument na zarovnanie cisla, hladame necele cislo(desatinnu ciarku)
+                        necele_cislo = tabulka[++i] - '0';          // pretypovanie
+                    }
+                    if(necele_cislo == 0){
+                        cislo[j++] = tabulka[i];                    // nacitavame iba ked sme stale nezachytili necele cislo(nejake cislo za desatinnou ciarkou)
+                    }
+                    i++;
+                }
+                ++kontrola;
+                pomocne_cislo = strtol(cislo, &pointer, 0);
+                printf("\nnezaokruhlene cislo: %d Necele cislo: %d ", pomocne_cislo, necele_cislo);
+                if(necele_cislo >= 5 && necele_cislo <= 9){
+                    if(pomocne_cislo >= 0){
+                        pomocne_cislo++;
+                    }
+                    else {
+                        pomocne_cislo--;                        //TODO POZNAMKA PRE RISA NA ZAJTRA, FUNGUJE TO AZ NA TAKY DETAIL ZE TO NEVIE ROZLISIT PRVY A PRAVDEPODOBNE POSLEDNY STLPEC, INAK OK, ESTE TREBA DOROBIT INTEGRACIU A CALLOVAT NEJAKU FUNKCIU NA VYMENU HODNOTY V STLPCI
+                    }
+                }
+                printf("zaokruhlene cislo: %d\n", pomocne_cislo);
+            }
+            i++;
+        }
+    }
+    else{
+        printf("Zle zadany command_stlpec (command_stlpec <= 0 || command_stlpec > *stlpec)\n");
+    }
 }
