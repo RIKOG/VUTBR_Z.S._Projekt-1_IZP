@@ -22,12 +22,12 @@ void toLower(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int
 
 void toUpper(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int dlzka_tabulky);
 
-void Round(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int dlzka_tabulky);
+void Round(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *dlzka_tabulky);
 
 
 int main(int argc, char *argv[]) {
-    char delimiter = 0, tabulka[MAX] = {0}, STR[MAX] = {0};
-    int i = 0, riadok = 0, stlpec = 0, command_riadok = 0, command_riadok_do = 0, command_stlpec = 0, command_stlpec_do = 0, dlzka_tabulky = 0, pomocna_stlpec = 0, pomocna_riadok = 0;
+    char delimiter = 0, tabulka[MAX] = {0}, STR[MAX] = {0}, cislo[MAX] = {0};
+    int i = 0, riadok = 0, stlpec = 0, command_riadok = 0, command_riadok_do = 0, command_stlpec = 0, command_stlpec_do = 0, dlzka_tabulky = 0, pomocna_stlpec = 0, pomocna_riadok = 0, round_cislo = 0;
     char argument_irow[MAX] = "irow";
     char argument_arow[MAX] = "arow";
     char argument_drow[MAX] = "drow";
@@ -160,7 +160,7 @@ int main(int argc, char *argv[]) {
             } else if (strcmp(argv[i], argument_round) == 0) {
                 command_stlpec = (*argv[++i] - '0');
                 if (delimiter != 0 && tabulka[0] != '\0') {
-                    Round(tabulka, &stlpec, delimiter, command_stlpec, dlzka_tabulky);
+                    Round(tabulka, &stlpec, delimiter, command_stlpec, &dlzka_tabulky);
                 }
                 command_stlpec = 0;
             }
@@ -291,7 +291,7 @@ void cset(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *d
                 }
                 ++kontrola;                                 // kontrola nam znaci na ktorom stlpci sa nachdzame, nakolko sme teraz jeden stlpec spracovali posunieme sa o jeden dopredu
             }
-            pomocna_tabulka[j] = tabulka[i];                // prekopirujeme chary ktoré nijako nemeníme do pomocnej tabulky
+            pomocna_tabulka[j] = tabulka[i];                // prekopirujeme chary ktore nijako nemenime do pomocnej tabulky
             j++;
             i++;
         }
@@ -343,37 +343,46 @@ void toUpper(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int
     }
 }
 
-void Round(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int dlzka_tabulky){  //123.4 zaokruhli na 123 ... 123.5 zaukruhli na 124 ... -123.4 zaokruhli na -123 ... -123.5 zaokruhli na -124
-    int i = 0, j = 0, kontrola = 1, pomocne_cislo = 0, necele_cislo = 0;
+void Round(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *dlzka_tabulky){  //123.4 zaokruhli na 123 ... 123.5 zaukruhli na 124 ... -123.4 zaokruhli na -123 ... -123.5 zaokruhli na -124
+    int i = 0, j = 0, kontrola = 1, pomocne_cislo = 0, necele_cislo = -1;
     char cislo[MAX] = {0}, *pointer;
-    if (command_stlpec > 0 && command_stlpec <= *stlpec) {
-        while (i < dlzka_tabulky) {
+    if (command_stlpec > 0 && command_stlpec <= *stlpec) {//necele cislo sa nenuluje
+        while (i < *dlzka_tabulky) {
             if (tabulka[i] == delimiter) {                          // ak narazime na delimiter posunieme znacenie stlpcov(kontrola) o jedno dopredu
                 ++kontrola;
             }
             if (kontrola == command_stlpec) {                       // ak narazime na stlpec ktory chceme menit
-                ++i;
-                while(tabulka[i] != delimiter){                     //TODO tu mam vyriesene char to int number, aplikovat vsade v main funkcii
+                if(command_stlpec > 1){                             // chceme sa z delimitera posunut nacislo, ale iba v tom pripade ze sa jedna o iny, nez prvy riadok, v tom pripade sa uz nachadzame hned na cisle
+                    ++i;
+                }
+                while(tabulka[i] != delimiter){
                     if(tabulka[i] == '.' || tabulka[i] == ','){     //kedze sme dostali argument na zarovnanie cisla, hladame necele cislo(desatinnu ciarku)
                         necele_cislo = tabulka[++i] - '0';          // pretypovanie
                     }
-                    if(necele_cislo == 0){
+                    if(necele_cislo == -1){
                         cislo[j++] = tabulka[i];                    // nacitavame iba ked sme stale nezachytili necele cislo(nejake cislo za desatinnou ciarkou)
                     }
                     i++;
+                    if(i == *dlzka_tabulky){                         // osetrenie posledneho stlpca
+                        break;
+                    }
                 }
                 ++kontrola;
+
                 pomocne_cislo = strtol(cislo, &pointer, 0);
-                printf("\nnezaokruhlene cislo: %d Necele cislo: %d ", pomocne_cislo, necele_cislo);
-                if(necele_cislo >= 5 && necele_cislo <= 9){
+                printf("\nnezaokruhlene cislo: %d ", pomocne_cislo);
+                if(necele_cislo >= 5 && necele_cislo <= 9){                 // robime upravu iba ked je dovod cislo zvacsovat, v opacnom pripade cislo za desatinnou ciarkou iba vynehame
                     if(pomocne_cislo >= 0){
                         pomocne_cislo++;
                     }
                     else {
-                        pomocne_cislo--;                        //TODO POZNAMKA PRE RISA NA ZAJTRA, FUNGUJE TO AZ NA TAKY DETAIL ZE TO NEVIE ROZLISIT PRVY A PRAVDEPODOBNE POSLEDNY STLPEC, INAK OK, ESTE TREBA DOROBIT INTEGRACIU A CALLOVAT NEJAKU FUNKCIU NA VYMENU HODNOTY V STLPCI
+                        pomocne_cislo--;
                     }
                 }
-                printf("zaokruhlene cislo: %d\n", pomocne_cislo);
+                cislo[0] = '\0';
+                sprintf(cislo,"%d", pomocne_cislo);
+                printf("zaokruhlene cislo: %d - %s\n", pomocne_cislo, cislo);
+//TODO                cset(tabulka, stlpec, delimiter, command_stlpec, dlzka_tabulky, cislo); // treba vymysliet ako zavolat cset tak aby to fungovalo inak done
             }
             i++;
         }
