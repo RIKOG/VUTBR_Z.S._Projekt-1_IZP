@@ -44,6 +44,9 @@ int main(int argc, char *argv[]) {
     char argument_toupper[MAX] = "toupper";
     char argument_round[MAX] = "round";
     char argument_int[MAX] = "int";
+    char argument_copy[MAX] = "copy";
+    char argument_swap[MAX] = "swap";
+    char argument_move[MAX] = "move";
     while (1) {
         i = 0;
         while (i < argc) {
@@ -361,21 +364,24 @@ void Round(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *
                 ++kontrola;
             }
             if (kontrola == command_stlpec) {                       // ak narazime na stlpec ktory chceme menit
-                if(kontrola > 1){                             // chceme sa z delimitera posunut nacislo, ale iba v tom pripade ze sa jedna o iny, nez prvy riadok, v tom pripade sa uz nachadzame hned na cisle
+                if(kontrola > 1){                                   // chceme sa z delimitera posunut nacislo, ale iba v tom pripade ze sa jedna o iny, nez prvy riadok, v tom pripade sa uz nachadzame hned na cisle
                     ++i;
                 }
-                while(tabulka[i] != delimiter){
-                    if(tabulka[i] == '.' || tabulka[i] == ','){     //kedze sme dostali argument na zarovnanie cisla, hladame necele cislo(desatinnu ciarku)
-                        necele_cislo = tabulka[++i] - '0';          // pretypovanie
+                if((tabulka[i] >= '0' && tabulka[i] <= '9') || tabulka[i] == '-'){ /* skontrolujeme ci sa vobec v danom stlpci nachadza nejake cislo, ak nie cela funkcia sa preskoci
+                                                                                    format typu 1458R45D mozu byt udaj ktory nechceme menit, no bohuzial zacinaju na prvom mieste cislom,
+                                                                                    mat taketo udaje v stlpcoch a dat na ne prikaz round je vec ktoru budem nateraz predpokladat za nepravdepodobnu*/
+                    while(tabulka[i] != delimiter){
+                        if(tabulka[i] == '.' || tabulka[i] == ','){     // kedze sme dostali argument na zarovnanie cisla, hladame necele cislo(desatinnu ciarku)
+                            necele_cislo = tabulka[++i] - '0';          // pretypovanie
+                        }
+                        if(necele_cislo == -1){
+                            cislo[j++] = tabulka[i];                    // nacitavame iba ked sme stale nezachytili necele cislo(nejake cislo za desatinnou ciarkou)
+                        }
+                        i++;
+                        if(i == *dlzka_tabulky){                        // osetrenie posledneho stlpca, kde while cyklus uz nikdy na ziaden delimiter nenarazi, preto treba breaknut ked sa dostane na dlzku stringu
+                            break;
+                        }
                     }
-                    if(necele_cislo == -1){
-                        cislo[j++] = tabulka[i];                    // nacitavame iba ked sme stale nezachytili necele cislo(nejake cislo za desatinnou ciarkou)
-                    }
-                    i++;
-                    if(i == *dlzka_tabulky){                         // osetrenie posledneho stlpca
-                        break;
-                    }
-                }
                 ++kontrola;
 
                 pomocne_cislo = strtol(cislo, &pointer, 0);
@@ -391,9 +397,12 @@ void Round(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *
                 cislo[0] = '\0';
                 sprintf(cislo,"%d", pomocne_cislo);
                 printf("zaokruhlene cislo: %d - %s\n", pomocne_cislo, cislo);
-//TODO                cset(tabulka, stlpec, delimiter, command_stlpec, dlzka_tabulky, cislo); // treba vymysliet ako zavolat cset tak aby to fungovalo inak done
+                }
             }
             i++;
+        }
+        if(cislo[0] != '\0'){           // ak sme v danom stlpci skutocne nasli cislo
+            cset(tabulka, stlpec, delimiter, command_stlpec, dlzka_tabulky, cislo); // pouzijeme uz existujucu funkciu na zapis upraveneho cisla do daneho stlpca
         }
     }
     else{
