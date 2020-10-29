@@ -2,13 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// TODO Vyriesit instanciu kde sa upravuje tabulka viacerymi prikazmi za sebou, pri najlepsom kodit uz na linuxe cez command line
-// todo prvy riadok pravdepodobne nikdy nebudem chciet vymazat, to budem musiet posetrit aby vsetky odstranovania riadkov zacinali od 1 a vsetky upravy tabulky pravdepodobne tiez
-// TODO čo sa stane ked uzivatel vymaze vsetky riadky
 // TODO napísať funkciu ktora kompletne prebehne argumenty a na jeden šup skontroluje či sú korektné
-// TODO zistiť či vlastne prvy riadok chcem upravovať alebo vôbec nie a zjednotiť rozhodnutie naprieč celým projektom
-// TODO Jo a ještě jedna věc, musím nahrazovat všechny oddělovače těch buněk na výstupu prvním znakem z delim? Nebo ty původní tam můžu nechat?
-// todo nakodit funkcie ktore skontroluju ci dalsi argv je cislo
 // TODO Vymysliet v podmienkach ako sa popasovat s chybnymi argumentami, napriklad cset cislo bez STR, ked by malo byt str tak skontrolujem či dalšie není argument, ak císlo skontrolujem ci sa tam proste nachadza cislo
 // TODO okomentovať
 // TODO spravit limit na dlzku stlpca a riadku celkovo, pravdepodobne redo nacitavanie
@@ -64,7 +58,6 @@ int main(int argc, char *argv[]) {
     while (1) {
         i = 0;
         while (i < argc) {
-            pomocna_stlpec = 0; //todo random resetovanie dat asi skor na koniec
             if ((strcmp(argv[i], "-d")) == 0) {
                 delimiter = *argv[++i];
                 dlzka_tabulky = nacitaj(tabulka, &riadok, &stlpec, delimiter);
@@ -76,11 +69,10 @@ int main(int argc, char *argv[]) {
                     for (int g = 0; g < stlpec - 1; g++) {
                         printf("%c", delimiter);        // vypisem na vstup prazdny riadok
                     }
-                    printf("\n");                       //todo zbierat chybne hlasky pravdepodobne ?
+                    printf("\n");
                 }
                 command_riadok = 0;
-            } else if (strcmp(argv[i], argument_arow) ==
-                       0) {   //TODO vyriesit nacitavanie aby bolo konecne co znamena ze budem moct aplikovat totok
+            } else if (strcmp(argv[i], argument_arow) == 0) {
                 prazdny_riadok_na_konci_tabulky = 1;
             } else if (strcmp(argv[i], argument_drow) == 0) {
                 command_riadok = (*argv[++i] - '0');            //todo zase problem s tym ze cisla su ulozene ako char
@@ -122,7 +114,7 @@ int main(int argc, char *argv[]) {
                 if (delimiter != 0 && tabulka[0] != '\0') {
                     if (command_stlpec > 0 && command_stlpec <= stlpec && command_stlpec_do <= stlpec && command_stlpec_do >= command_stlpec) {
                         pomocna_stlpec -= command_stlpec_do - command_stlpec + 1; // odcitame vymazane stlpce
-                        dcols(tabulka, &stlpec, delimiter, command_stlpec, command_stlpec_do, dlzka_tabulky); //TODO posunul som to za if podmienku, skontrolovat ci to stale funguje
+                        dcols(tabulka, &stlpec, delimiter, command_stlpec, command_stlpec_do, dlzka_tabulky);
                         dlzka_tabulky = strlen(tabulka);                    // nova dlzka po vymazani stlpcov
                     }
                 }
@@ -155,10 +147,8 @@ int main(int argc, char *argv[]) {
                     Int(tabulka, &stlpec, delimiter, command_stlpec, &dlzka_tabulky);
                 }
                 command_stlpec = 0;
-            } else if (strcmp(argv[i], argument_copy) ==
-                       0) {       //todo spravit iba jednu funckiu ktora skontroluje ci dalsi argument je cislo
-                command_stlpec = (*argv[++i] -
-                                  '0');                //todo zjednodusiť podmienky, nemusia furt byt na kazdom riadku separatne, mozem sa to spytat pre vsetko naraz
+            } else if (strcmp(argv[i], argument_copy) == 0) {
+                command_stlpec = (*argv[++i] - '0');
                 command_stlpec_do = (*argv[++i] - '0');
                 if (delimiter != 0 && tabulka[0] != '\0') {
                     if (command_stlpec > 0 && command_stlpec <= stlpec && command_stlpec_do <= stlpec &&
@@ -213,7 +203,7 @@ int main(int argc, char *argv[]) {
         riadok += pomocna_riadok, stlpec += pomocna_stlpec;
         pomocna_riadok = 0, pomocna_stlpec = 0;
         if (tabulka[0] !=
-            '\0') {           // vypisem na vstup iba vtedy ked sa nestalo ze som upravou tabuliek nevymazal vsetko //todo napisat funkciu ktora skontroluje ci v riadku neni iba nejaky brajgel ako prazdne charaktery ako enter a medzery
+            '\0') {           // vypisem na vstup iba vtedy ked sa nestalo ze som upravou tabuliek nevymazal vsetko //todo napisat funkciu ktora skontroluje ci v riadku neni iba nejaky brajgel ako prazdne charaktery ako enter a medzeri
             printf("%s\t\t\t\t\t\triadok: %d, stlpcov: %d dlzka_tabulky: %d\n", tabulka, riadok, stlpec, dlzka_tabulky);
         }
     }
@@ -384,8 +374,7 @@ void toUpper(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int
     }
 }
 
-void Round(char *tabulka, int *stlpec, char delimiter, int command_stlpec,
-           int *dlzka_tabulky) {  //123.4 zaokruhli na 123 ... 123.5 zaukruhli na 124 ... -123.4 zaokruhli na -123 ... -123.5 zaokruhli na -124
+void Round(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *dlzka_tabulky) {  //123.4 zaokruhli na 123 ... 123.5 zaukruhli na 124 ... -123.4 zaokruhli na -123 ... -123.5 zaokruhli na -124
     int i = 0, j = 0, kontrola = 1, pomocne_cislo = 0, necele_cislo = -1;
     char cislo[MAX] = {0}, *pointer;
     if (command_stlpec > 0 && command_stlpec <= *stlpec) {
