@@ -3,19 +3,16 @@
 #include <stdlib.h>
 #include <string.h>
 // dlzku tabulky vzdy upravujem vo funkciach, pocet stlpcov upravujem v maine
-// todo presunut vsetky if podmienky do funkcii, vyzera to cistejsie
 // todo delimiterov je viacej v jednom stringu a treba všteky nastavit na jednotny
 // todo napisat if podmienky ktore kontroluju podla prveho riadku ci ostatne riadky maju dany pocet stlpcov - poriesit pri nacitavani - nekonecny while cyklus prerobit na otazku ci char c, ktory si budem preposielat sa nerovna EOF
-// todo v kazdej funkcii menit dlzku tabulky, aj tam kde iba odstranujem riadky predsa boha, musi to byt vo funkcii, nesmie to byt v if else podmienkach
 // todo odstranit passovanie pointeru stlpcov do funkcii kde neupravujem pocet stlpcov duh
-// TODO napísať funkciu ktora kompletne prebehne argumenty a na jeden šup skontroluje či sú korektné
 // TODO Vymysliet v podmienkach ako sa popasovat s chybnymi argumentami, napriklad cset cislo bez STR, ked by malo byt str tak skontrolujem či dalšie není argument, ak císlo skontrolujem ci sa tam proste nachadza cislo
 // TODO okomentovať
 // todo stderr na errory
 // todo pretestovat vsetky funkcie s tym, ze chcem menit posledny stlpec, alebo cokolvek robit s poslednym stlpcom
 #define MAX 10000
 
-int nacitaj(char *tabulka, int *riadok, int *stlpec, char delimiter);
+int nacitaj(char *tabulka, int *riadok, int *stlpec, char delimiter, char delimiter_array[]);
 
 void icol(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *dlzka_tabulky);
 
@@ -44,7 +41,7 @@ int beginswith(char *tabulka, int stlpec, char delimiter, int command_stlpec, in
 int contains(char *tabulka, int stlpec, char delimiter, int command_stlpec, int dlzka_tabulky, char STR[]);
 
 int main(int argc, char *argv[]) {
-    char delimiter = ' ', tabulka[MAX] = {0}, STR[MAX] = {0}, cislo[MAX] = {0};
+    char delimiter = ' ', tabulka[MAX] = {0}, STR[MAX] = {0}, cislo[MAX] = {0}, delimiter_array[MAX] = {0};
     int i = 0, riadok = 0, stlpec = 0, command_riadok = 0, command_riadok_do = 0, command_stlpec = 0, command_stlpec_do = 0, dlzka_tabulky = 0, pomocna_stlpec = 0, pomocna_riadok = 0, rows_command_riadok = 0, rows_command_riadok_do = 0;
     int prazdny_riadok_na_konci_tabulky = 0;
     char argument_irow[MAX] = "irow";
@@ -72,8 +69,9 @@ int main(int argc, char *argv[]) {
         i = 0;
         while (i < argc) {
             if ((strcmp(argv[i], "-d")) == 0) {
-                delimiter = *argv[++i];
-                dlzka_tabulky = nacitaj(tabulka, &riadok, &stlpec, delimiter);
+                strcpy(delimiter_array, argv[i+1]); //todo chcem i+1, i+2 viacej nez ++i
+                delimiter = delimiter_array[0];
+                dlzka_tabulky = nacitaj(tabulka, &riadok, &stlpec, delimiter, delimiter_array);
             } else if (strcmp(argv[i], argument_irow) == 0) {
                 command_riadok = (*argv[++i] - '0');
                 if (delimiter != 0 && tabulka[0] != '\0' && command_riadok > 0 &&
@@ -233,7 +231,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-int nacitaj(char *tabulka, int *riadok, int *stlpec, char delimiter) {
+int nacitaj(char *tabulka, int *riadok, int *stlpec, char delimiter, char delimiter_array[]) {
     char c = 0;
     int pocet_znakov = 0, i = 0, pomocna_stlpec = 1;
     while ((c = getc(stdin)) != EOF) {                          // TODO fgets možno odpoved ako spravne načítať vstup
