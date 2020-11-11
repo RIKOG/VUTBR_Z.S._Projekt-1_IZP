@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
         i = 0;
         while (i < argc) {
             if ((strcmp(argv[i], "-d")) == 0) {
-                strcpy(delimiter_array, argv[i++]); //todo chcem i+1, i+2 viacej nez ++i
+                strcpy(delimiter_array, argv[++i]); //todo chcem i+1, i+2 viacej nez ++i
                 delimiter = delimiter_array[0];
                 dlzka_tabulky = nacitaj(tabulka, &riadok, &stlpec, delimiter, delimiter_array);
             } else if (strcmp(argv[i], argument_irow) == 0) {
@@ -233,7 +233,7 @@ int main(int argc, char *argv[]) {
 
 int nacitaj(char *tabulka, int *riadok, int *stlpec, char delimiter, char delimiter_array[]) {
     char c = 0;
-    int pocet_znakov = 0, i = 0, pomocna_stlpec = 1;
+    int pocet_znakov = 0, i = 0, j = 0, pomocna_stlpec = 1;
     while ((c = getc(stdin)) != EOF) {                          // TODO fgets možno odpoved ako spravne načítať vstup
         if (c == '\n') {
             tabulka[i] = '\0';
@@ -244,9 +244,13 @@ int nacitaj(char *tabulka, int *riadok, int *stlpec, char delimiter, char delimi
             pomocna_stlpec += 1;
         }
         tabulka[pocet_znakov] = c;
-        if(/*tabulka[pocet_znakov] == delimiter_array*/){
-            /*tabulka[pocet_znakov] = delimiter*/
+        while(j < strlen(delimiter_array)){
+            if(tabulka[pocet_znakov] == delimiter_array[j]){            //ak najdeme delimiter, nastavime ho na jeho hlavny oddelovac
+            tabulka[pocet_znakov] = delimiter;
+            }
+            j++;
         }
+        j = 0;
         pocet_znakov++;
         i++;
         *stlpec = pomocna_stlpec;
