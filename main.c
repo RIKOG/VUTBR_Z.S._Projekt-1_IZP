@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
         i = 0;
         while (i < argc) {
             if ((strcmp(argv[i], "-d")) == 0) {
-                strcpy(delimiter_array, argv[i+1]); //todo chcem i+1, i+2 viacej nez ++i
+                strcpy(delimiter_array, argv[i++]); //todo chcem i+1, i+2 viacej nez ++i
                 delimiter = delimiter_array[0];
                 dlzka_tabulky = nacitaj(tabulka, &riadok, &stlpec, delimiter, delimiter_array);
             } else if (strcmp(argv[i], argument_irow) == 0) {
@@ -243,7 +243,11 @@ int nacitaj(char *tabulka, int *riadok, int *stlpec, char delimiter, char delimi
         if (c == delimiter) {
             pomocna_stlpec += 1;
         }
-        tabulka[pocet_znakov++] = c;
+        tabulka[pocet_znakov] = c;
+        if(/*tabulka[pocet_znakov] == delimiter_array*/){
+            /*tabulka[pocet_znakov] = delimiter*/
+        }
+        pocet_znakov++;
         i++;
         *stlpec = pomocna_stlpec;
     }
