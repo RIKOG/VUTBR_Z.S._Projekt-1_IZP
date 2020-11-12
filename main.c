@@ -3,14 +3,17 @@
 #include <stdlib.h>
 #include <string.h>
 // dlzku tabulky vzdy upravujem vo funkciach, pocet stlpcov upravujem v maine
-// todo delimiterov je viacej v jednom stringu a treba všteky nastavit na jednotny
+// todo Vstupní tabulka nesmí být prázdný soubor.
+
+
+// todo Maximální podporovaná délka řetězce v buňce nebo argumentu je 100. Maximální délka celého řádku je 10KiB. Při delších řetězcích program upozorňuje chybovým hlášením a ukončením s chybovým kódem.
 // todo napisat if podmienky ktore kontroluju podla prveho riadku ci ostatne riadky maju dany pocet stlpcov - poriesit pri nacitavani - nekonecny while cyklus prerobit na otazku ci char c, ktory si budem preposielat sa nerovna EOF
 // todo odstranit passovanie pointeru stlpcov do funkcii kde neupravujem pocet stlpcov duh
 // TODO Vymysliet v podmienkach ako sa popasovat s chybnymi argumentami, napriklad cset cislo bez STR, ked by malo byt str tak skontrolujem či dalšie není argument, ak císlo skontrolujem ci sa tam proste nachadza cislo
 // TODO okomentovať
 // todo stderr na errory
 // todo pretestovat vsetky funkcie s tym, ze chcem menit posledny stlpec, alebo cokolvek robit s poslednym stlpcom
-#define MAX 10000
+#define MAX 10241
 
 int nacitaj(char *tabulka, int *riadok, int *stlpec, char delimiter, char delimiter_array[]);
 
@@ -70,7 +73,7 @@ int main(int argc, char *argv[]) {
         while (i < argc) {
             if ((strcmp(argv[i], "-d")) == 0) {
                 strcpy(delimiter_array, argv[++i]); //todo chcem i+1, i+2 viacej nez ++i
-                delimiter = delimiter_array[0];
+                delimiter = delimiter_array[0];                                                         // Nedavam sem kontrolu pod predpokladom ze za -d uzivatel vzdy zada delimitre ktore chce pouzit
                 dlzka_tabulky = nacitaj(tabulka, &riadok, &stlpec, delimiter, delimiter_array);
             } else if (strcmp(argv[i], argument_irow) == 0) {
                 command_riadok = (*argv[++i] - '0');
@@ -233,7 +236,7 @@ int main(int argc, char *argv[]) {
 
 int nacitaj(char *tabulka, int *riadok, int *stlpec, char delimiter, char delimiter_array[]) {
     char c = 0;
-    int pocet_znakov = 0, i = 0, j = 0, pomocna_stlpec = 1;
+    int pocet_znakov = 0, i = 0, j = 0, pomocna_stlpec = 1, max_riadok = 10240, max_stlpec = 100;
     while ((c = getc(stdin)) != EOF) {                          // TODO fgets možno odpoved ako spravne načítať vstup
         if (c == '\n') {
             tabulka[i] = '\0';
