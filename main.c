@@ -1,3 +1,4 @@
+
 //Richard Gajdosik, IDE = CLION
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,7 +45,7 @@ int beginswith(char *tabulka, int stlpec, char delimiter, int command_stlpec, in
 int contains(char *tabulka, int stlpec, char delimiter, int command_stlpec, int dlzka_tabulky, char STR[]);
 
 int main(int argc, char *argv[]) {
-    char delimiter = ' ', tabulka[MAX] = {0}, STR[MAX] = {0}, cislo[MAX] = {0}, delimiter_array[MAX] = {0};
+    char delimiter = ' ', tabulka[MAX] = {0}, STR[MAX] = {0}, delimiter_array[MAX] = {0};
     int i = 0, riadok = 0, stlpec = 0, command_riadok = 0, command_riadok_do = 0, command_stlpec = 0, command_stlpec_do = 0, dlzka_tabulky = 0, pomocna_stlpec = 0, pomocna_riadok = 0, rows_command_riadok = 0, rows_command_riadok_do = 0;
     int prazdny_riadok_na_konci_tabulky = 0;
     char argument_irow[MAX] = "irow";
@@ -75,6 +76,10 @@ int main(int argc, char *argv[]) {
                 strcpy(delimiter_array, argv[++i]); //todo chcem i+1, i+2 viacej nez ++i
                 delimiter = delimiter_array[0];                                                         // Nedavam sem kontrolu pod predpokladom ze za -d uzivatel vzdy zada delimitre ktore chce pouzit
                 dlzka_tabulky = nacitaj(tabulka, &riadok, &stlpec, delimiter, delimiter_array);
+                if(dlzka_tabulky == -1){
+                    printf("\nYOU done fuckedup\n\n");
+                    break; //todo chcem skoncit kompletne vsetko, vypisat error presiahnutie miery
+                }
             } else if (strcmp(argv[i], argument_irow) == 0) {
                 command_riadok = (*argv[++i] - '0');
                 if (delimiter != 0 && tabulka[0] != '\0' && command_riadok > 0 &&
@@ -236,7 +241,7 @@ int main(int argc, char *argv[]) {
 
 int nacitaj(char *tabulka, int *riadok, int *stlpec, char delimiter, char delimiter_array[]) {
     char c = 0;
-    int pocet_znakov = 0, i = 0, j = 0, pomocna_stlpec = 1, max_riadok = 10240, max_stlpec = 100;
+    int pocet_znakov = 0, i = 0, j = 0, chars_in_col = 0, pomocna_stlpec = 1, max_riadok = 10240, max_stlpec = 101;
     while ((c = getc(stdin)) != EOF) {                          // TODO fgets možno odpoved ako spravne načítať vstup
         if (c == '\n') {
             tabulka[i] = '\0';
@@ -245,20 +250,25 @@ int nacitaj(char *tabulka, int *riadok, int *stlpec, char delimiter, char delimi
         }
         if (c == delimiter) {
             pomocna_stlpec += 1;
+            chars_in_col = 0;
         }
         tabulka[pocet_znakov] = c;
-        while(j < strlen(delimiter_array)){
-            if(tabulka[pocet_znakov] == delimiter_array[j]){            //ak najdeme delimiter, nastavime ho na jeho hlavny oddelovac
-            tabulka[pocet_znakov] = delimiter;
+        while (j < (int)strlen(delimiter_array)) {
+            if (tabulka[pocet_znakov] ==
+                delimiter_array[j]) {            //ak najdeme delimiter, nastavime ho na jeho hlavny oddelovac
+                tabulka[pocet_znakov] = delimiter;
             }
             j++;
         }
         j = 0;
-        pocet_znakov++;
-        i++;
+        pocet_znakov++, i++, chars_in_col++;
         *stlpec = pomocna_stlpec;
+        if(i == max_riadok || chars_in_col == max_stlpec){
+            return -1;
+        }
     }
-} //TODO vyriesit nacitavanie cisel nad 10 kedze je to vsetko char
+    return -1;
+}
 
 void icol(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *dlzka_tabulky) {
     int i = 0, j = 0, kontrola = 1;
@@ -345,12 +355,12 @@ void cset(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *d
                 while (tabulka[i] != delimiter) {
                     i++;
                 }
-                for (int p = 0; p < strlen(STR); p++) {      // nakopirujem string do stlpca
+                for (int p = 0; p < (int)strlen(STR); p++) {      // nakopirujem string do stlpca
                     pomocna_tabulka[j++] = STR[p];
                 }
             } else if (command_stlpec == *stlpec && kontrola ==
                                                     *stlpec) {                                          // kontrola ci upravujeme posledny stlpec
-                for (int p = 0; p < strlen(STR); p++) {      // nakopirujem string do stlpca
+                for (int p = 0; p < (int)strlen(STR); p++) {      // nakopirujem string do stlpca
                     pomocna_tabulka[j++] = STR[p];
                 }
                 break;
@@ -599,7 +609,7 @@ int beginswith(char *tabulka, int stlpec, char delimiter, int command_stlpec, in
         i++;
     }
     i = 0;
-    while (i < strlen(STR)) {
+    while (i < (int)strlen(STR)) {
         if (STR[i] != pomocna_tabulka[i]) {
             return 0;
         }
@@ -639,8 +649,7 @@ int contains(char *tabulka, int stlpec, char delimiter, int command_stlpec, int 
         }
         i++;
     }
-    if (j ==
-        0) {                                               // do argumentu sa neda dat medzera ani prazdny znak, takze ak je stlpec prazdny, nevieme v ziadnom pripade spustit kontrolu contains, cize tym padom automaticky prazdne stlpce berem tak, ze ich nechceme spracovavat
+    if (j == 0) {                                               // do argumentu sa neda dat medzera ani prazdny znak, takze ak je stlpec prazdny, nevieme v ziadnom pripade spustit kontrolu contains, cize tym padom automaticky prazdne stlpce berem tak, ze ich nechceme spracovavat
         return 0;
     }
     return 1;
