@@ -1,0 +1,52 @@
+:::
+str0:::
+:str1:!
+:,str2yolo:
+:::str355
+ : : :
+Jmeno.Pocet chyb:Krajina,Poznamka
+Josef Novak     :3  :SK:
+Pepa Novy       :0  :SK:TEST
+Pepy Novotny    :7  :CZ:
+Pepek Novek     :289::TEST
+Adam Evak       :0  ::
+Eva Adamova     :0  :UK:
+Kain Abelis     :0  :US:
+
+-123.6:Pocet chyb:Poznamka
+Josef Novak:3:-123,6
+Pepa Novy:01Richard:-123
+Joseph New:0:
+:7:
+-155.8:289.1:
+Adam Evak:-123,0:
+Eva Adamova:0:
+Kain Abelis:0:
+
+Příkaz:
+rows 2 - beginswith 2 0 rows 1 3 cset 3 Výherce toupper 1
+
+Předpokládaný výstup:
+
+Jméno:Počet chyb:Poznámka
+Josef Novák:3:
+PEPA NOVÝ:0:Výherce
+JOSEPH NEW:0:Výherce
+Pépy Novotný:7:
+Pepek Nověk:289:
+ADAM EVÁK:0:Výherce
+Eva Adamová:0:
+Kain Ábelis:0:
+
+Jmeno:Pocet chyb::Poznamka
+Josef Novak:3::
+Pepa Novy:0::TEST
+:::
+str0:::
+:str1::
+:::str2
+Pepy Novotny:7::
+Pepek Novek:289::TEST
+Adam Evak:0::
+Eva Adamova:0::
+Kain Abelis:0::
