@@ -4,7 +4,6 @@
 #include <string.h>
 // dlzku tabulky vzdy upravujem vo funkciach, pocet stlpcov upravujem v maine
 // TODO okomentovať
-// todo stderr na errory
 #define MAX 10241
 #define dlzka_stlpca 100
 
@@ -61,6 +60,7 @@ int main(int argc, char *argv[]) {
             } else if (strcmp(argv[i], "irow") == 0) {
                 command_riadok = atoi(argv[++i]);
                 if(command_riadok <= 0 || delimiter == 0 || zpracovanie_dat == 1 || selekcia_riadkov == 1 || uprava_tabulky == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 uprava_tabulky = 1;
@@ -74,12 +74,14 @@ int main(int argc, char *argv[]) {
             } else if (strcmp(argv[i], "arow") == 0) {
                 prazdny_riadok_na_konci_tabulky = 1;
                 if(zpracovanie_dat == 1 || selekcia_riadkov == 1 || uprava_tabulky == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 uprava_tabulky = 1;
             } else if (strcmp(argv[i], "drow") == 0) {
                 command_riadok = atoi(argv[++i]);
                 if(command_riadok <= 0 || delimiter == 0 || zpracovanie_dat == 1 || selekcia_riadkov == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 uprava_tabulky = 1;
@@ -90,6 +92,7 @@ int main(int argc, char *argv[]) {
                 command_riadok = atoi(argv[++i]);
                 command_riadok_do = atoi(argv[++i]);
                 if(command_riadok <= 0 || command_riadok_do <= 0 || command_riadok > command_riadok_do || delimiter == 0 || zpracovanie_dat == 1 || selekcia_riadkov == 1 || uprava_tabulky == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 uprava_tabulky = 1;
@@ -100,7 +103,8 @@ int main(int argc, char *argv[]) {
                 }
             } else if (strcmp(argv[i], "icol") == 0) {
                 command_stlpec = atoi(argv[++i]);
-                if(command_stlpec <= 0 || dlzka_tabulky + 1 > MAX || delimiter == 0 || zpracovanie_dat == 1 || selekcia_riadkov == 1 || uprava_tabulky == 1){ //todo vypisat chybovu hlasu
+                if(command_stlpec <= 0 || dlzka_tabulky + 1 > MAX || delimiter == 0 || zpracovanie_dat == 1 || selekcia_riadkov == 1 || uprava_tabulky == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 uprava_tabulky = 1;
@@ -109,7 +113,8 @@ int main(int argc, char *argv[]) {
                     pomocna_stlpec++;                                        //pridame do pomocnej premennej informaciu, ze vo finalnom pocte stlpcov bude + 1
                 }
             } else if (strcmp(argv[i], "acol") == 0) {
-                if(dlzka_tabulky + 1 > MAX || delimiter == 0 || zpracovanie_dat == 1 || selekcia_riadkov == 1 || uprava_tabulky == 1){ //todo vypisat chybovu hlasu
+                if(dlzka_tabulky + 1 > MAX || delimiter == 0 || zpracovanie_dat == 1 || selekcia_riadkov == 1 || uprava_tabulky == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 uprava_tabulky = 1;
@@ -120,6 +125,7 @@ int main(int argc, char *argv[]) {
             } else if (strcmp(argv[i], "dcol") == 0) {
                 command_stlpec = atoi(argv[++i]);
                 if(command_stlpec <= 0 || delimiter == 0 || zpracovanie_dat == 1 || selekcia_riadkov == 1 || uprava_tabulky == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 uprava_tabulky = 1;
@@ -131,6 +137,7 @@ int main(int argc, char *argv[]) {
                 command_stlpec = atoi(argv[++i]);
                 command_stlpec_do = atoi(argv[++i]);
                 if(command_stlpec <= 0 || command_stlpec_do <= 0 || command_stlpec > command_stlpec_do || delimiter == 0 || zpracovanie_dat == 1 || selekcia_riadkov == 1 || uprava_tabulky == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 uprava_tabulky = 1;
@@ -142,6 +149,7 @@ int main(int argc, char *argv[]) {
                 command_stlpec = atoi(argv[++i]);
                 strcpy(STR, argv[++i]);
                 if(command_stlpec <= 0 || dlzka_tabulky + (int)strlen(STR) > MAX || (int)strlen(STR) > dlzka_stlpca || delimiter == 0 || uprava_tabulky == 1 || zpracovanie_dat == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 zpracovanie_dat = 1;
@@ -152,6 +160,7 @@ int main(int argc, char *argv[]) {
             } else if (strcmp(argv[i], "tolower") == 0) {
                 command_stlpec = atoi(argv[++i]);
                 if(command_stlpec <= 0 || delimiter == 0 || uprava_tabulky == 1 || zpracovanie_dat == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 zpracovanie_dat = 1;
@@ -161,6 +170,7 @@ int main(int argc, char *argv[]) {
             } else if (strcmp(argv[i], "toupper") == 0) {
                 command_stlpec = atoi(argv[++i]);
                 if(command_stlpec <= 0 || delimiter == 0 || uprava_tabulky == 1 || zpracovanie_dat == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 zpracovanie_dat = 1;
@@ -170,11 +180,13 @@ int main(int argc, char *argv[]) {
             } else if (strcmp(argv[i], "round") == 0) {
                 command_stlpec = atoi(argv[++i]);
                 if(command_stlpec <= 0 || delimiter == 0 || uprava_tabulky == 1 || zpracovanie_dat == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 zpracovanie_dat = 1;
                 if (tabulka[0] != '\0' && rows == 1) {
                     if(Round(tabulka, stlpec, delimiter, command_stlpec, &dlzka_tabulky) == -1){
+                        fprintf(stderr, "%s %d%s", "V danom stlpci sa nenachadza cislo! Zle data na riadku:", riadok, "%d");
                         return -1;
                     }
                 }
@@ -186,6 +198,7 @@ int main(int argc, char *argv[]) {
                 zpracovanie_dat = 1;
                 if (tabulka[0] != '\0' && rows == 1) {
                     if(Int(tabulka, stlpec, delimiter, command_stlpec, &dlzka_tabulky) == -1){
+                        fprintf(stderr, "%s %d%s", "V danom stlpci sa nenachadza cislo! Zle data na riadku:", riadok, "%d");
                         return -1;
                     }
                 }
@@ -193,6 +206,7 @@ int main(int argc, char *argv[]) {
                 command_stlpec = atoi(argv[++i]);
                 command_stlpec_do = atoi(argv[++i]);
                 if(command_stlpec <= 0 || command_stlpec_do <= 0 || delimiter == 0 || uprava_tabulky == 1 || zpracovanie_dat == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 zpracovanie_dat = 1;
@@ -203,6 +217,7 @@ int main(int argc, char *argv[]) {
                 command_stlpec = atoi(argv[++i]);
                 command_stlpec_do = atoi(argv[++i]);
                 if(command_stlpec <= 0 || command_stlpec_do <= 0 || delimiter == 0 || uprava_tabulky == 1 || zpracovanie_dat == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 zpracovanie_dat = 1;
@@ -213,6 +228,7 @@ int main(int argc, char *argv[]) {
                 command_stlpec = atoi(argv[++i]);
                 command_stlpec_do = atoi(argv[++i]);
                 if(command_stlpec <= 0 || command_stlpec_do <= 0 || delimiter == 0 || uprava_tabulky == 1 || zpracovanie_dat == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 zpracovanie_dat = 1;
@@ -242,6 +258,7 @@ int main(int argc, char *argv[]) {
                 rows_command_riadok_do = atoi(argv[++i]);
                 strcpy(STR_2, argv[i]);
                 if(delimiter == 0 || uprava_tabulky == 1 || zpracovanie_dat == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 selekcia_riadkov = 1;
@@ -257,6 +274,7 @@ int main(int argc, char *argv[]) {
                     rows_command_riadok_do = riadok + rows_command_riadok;
                 }
                 if(rows_command_riadok <= 0 || rows_command_riadok_do <= 0 || rows_command_riadok > rows_command_riadok_do) {
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 if (tabulka[0] != '\0') {
@@ -271,6 +289,7 @@ int main(int argc, char *argv[]) {
                 command_stlpec = atoi(argv[++i]);
                 strcpy(STR, argv[++i]);
                 if(command_stlpec <= 0 || (int)strlen(argv[i]) > dlzka_stlpca || delimiter == 0 || uprava_tabulky == 1 || zpracovanie_dat == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 selekcia_riadkov = 1;
@@ -287,6 +306,7 @@ int main(int argc, char *argv[]) {
                 command_stlpec = atoi(argv[++i]);
                 strcpy(STR, argv[++i]);
                 if(command_stlpec <= 0 || (int)strlen(argv[i]) > dlzka_stlpca || delimiter == 0 || uprava_tabulky == 1 || zpracovanie_dat == 1){
+                    fprintf(stderr, "%s", "Nevalidne argumenty!\n");
                     return -1;
                 }
                 selekcia_riadkov = 1;
@@ -300,6 +320,7 @@ int main(int argc, char *argv[]) {
                     rows = 0;
                 }
             } else {
+                fprintf(stderr, "%s %s%s", "Zadany prikaz nezodpovedna ziadnemu znamemu argumentu! Zly argument:", argv[i], "\n");
                 return -1;
             }
             i++;
