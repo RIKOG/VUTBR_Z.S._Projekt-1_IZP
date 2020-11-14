@@ -3,13 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 // dlzku tabulky vzdy upravujem vo funkciach, pocet stlpcov upravujem v maine
-// todo kontrolovat ci riadok ma rovnaky pocet stlpcov
 // TODO okomentovať
 // todo stderr na errory
-// todo odstraniť duplicitne podmienky vo funkciach
 #define MAX 10241
 #define dlzka_stlpca 100
-
 
 int nacitaj(char *tabulka, int *riadok, int *stlpec, char delimiter, char delimiter_array[], int *koniec_riadku);
 
@@ -364,7 +361,7 @@ int nacitaj(char *tabulka, int *riadok, int *stlpec, char delimiter, char delimi
 void icol(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *dlzka_tabulky) {
     int i = 0, j = 0, kontrola = 1;
     char pomocna_tabulka[MAX] = {0};
-    if (command_stlpec > 0 && command_stlpec <= *stlpec) {
+    if (command_stlpec <= *stlpec) {
         while (i < *dlzka_tabulky) {
             if (tabulka[i] == delimiter) {
                 ++kontrola;
@@ -391,7 +388,7 @@ void dcol(char *tabulka, int *stlpec, char delimiter, int command_stlpec,
           int *dlzka_tabulky) {
     int i = 0, j = 0, kontrola = 1;
     char pomocna_tabulka[MAX] = {0};
-    if (command_stlpec > 0 && command_stlpec <= *stlpec) {
+    if (command_stlpec <= *stlpec) {
         while (i < *dlzka_tabulky) {
             if (tabulka[i] == delimiter) {
                 ++kontrola;
@@ -415,8 +412,7 @@ void dcols(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int c
            int *dlzka_tabulky) {
     int i = 0, j = 0, kontrola = 1;
     char pomocna_tabulka[MAX] = {0};
-    if (command_stlpec > 0 && command_stlpec <= *stlpec && command_stlpec_do <= *stlpec &&
-        command_stlpec_do >= command_stlpec) {
+    if (command_stlpec <= *stlpec && command_stlpec_do <= *stlpec) {
         while (i < *dlzka_tabulky) {
             if (tabulka[i] == delimiter) {
                 ++kontrola;
@@ -439,7 +435,7 @@ void dcols(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int c
 void cset(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *dlzka_tabulky, char STR[]) {
     int i = 0, j = 0, kontrola = 1;
     char pomocna_tabulka[MAX] = {0};
-    if (command_stlpec > 0 && command_stlpec <= *stlpec) {
+    if (command_stlpec <= *stlpec) {
         while (i < (*dlzka_tabulky) + 1) {
             if ((command_stlpec == 1 && kontrola == 1) || (command_stlpec > 1 && command_stlpec < *stlpec && kontrola ==
                                                                                                              command_stlpec)) {   // ked upravujeme iny, nez posledny stlpec
@@ -471,7 +467,7 @@ void cset(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int *d
 
 void toLower(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int dlzka_tabulky) {
     int i = 0, kontrola = 1;
-    if (command_stlpec > 0 && command_stlpec <= *stlpec) {
+    if (command_stlpec <= *stlpec) {
         while (i < dlzka_tabulky) {
             if (tabulka[i] ==
                 delimiter) {                  // ak narazime na delimiter posunieme znacenie stlpcov(kontrola) o jedno dopredu
@@ -489,7 +485,7 @@ void toLower(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int
 
 void toUpper(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int dlzka_tabulky) {
     int i = 0, kontrola = 1;
-    if (command_stlpec > 0 && command_stlpec <= *stlpec) {
+    if (command_stlpec <= *stlpec) {
         while (i < dlzka_tabulky) {
             if (tabulka[i] ==
                 delimiter) {                  // ak narazime na delimiter posunieme znacenie stlpcov(kontrola) o jedno dopredu
@@ -588,7 +584,7 @@ void copy(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int co
           int *dlzka_tabulky) { //todo copy funkcia nevie urobit prikaz command_stlpec > command_stlpec_do
     int i = 0, j = 0, kontrola = 1;
     char STR[MAX] = {0};
-    if (command_stlpec > 0 && command_stlpec <= *stlpec && command_stlpec_do <= *stlpec && command_stlpec_do > 0) {
+    if (command_stlpec <= *stlpec && command_stlpec_do <= *stlpec) {
         while (i < (*dlzka_tabulky) + 1) {
             if ((command_stlpec == 1 && kontrola == 1) || (command_stlpec > 1 && command_stlpec < *stlpec && kontrola ==
                                                                                                              command_stlpec)) {   // ked upravujeme iny, nez posledny stlpec
@@ -614,8 +610,7 @@ void copy(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int co
 void swap(char *tabulka, int *stlpec, char delimiter, int command_stlpec, int command_stlpec_do, int *dlzka_tabulky) {
     int i = 0, j = 0, kontrola = 1;
     char STR1[MAX] = {0}, STR2[MAX] = {0};
-    if (command_stlpec > 0 && command_stlpec <= *stlpec && command_stlpec_do <= *stlpec &&
-        command_stlpec_do > 0) {
+    if (command_stlpec <= *stlpec && command_stlpec_do <= *stlpec) {
         while (i < *dlzka_tabulky) {
             if (tabulka[i] ==
                 delimiter) {                                      // ak narazime na delimiter posunieme znacenie stlpcov(kontrola) o jedno dopredu
