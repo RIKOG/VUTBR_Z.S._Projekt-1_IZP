@@ -1,7 +1,8 @@
 /*
  * IDE CLion - Richard Gajdošík
  * Implementacia prveho projektu z predmetu IZP, zimny semester, skolsky rok 20/21
- *
+ * UPOZORNENIE, nakolko je v zadani napisane ze program sa vzdy bude pustat s -d dovolil som si logiku programu spravit tak, ze bude nacitavat iba ked narazi na -d (Aj ked to teraz po dopisani nedava zmysel)
+ * Ospravedlnujem sa za skutocne velky main, no nakolko vsetko musi byt vzdy v jednom celku prislo mi zbytocne miesto 300 riadkoveho mainu mat spravenu 300 riadkovu funkciu
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Command list * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * irow R - vloží řádek tabulky před řádek R > 0 (insert-row).
  * arow - přidá nový řádek tabulky na konec tabulky (append-row).
@@ -30,8 +31,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// TODO okomentovať
-// todo nacitavanie mimo delimiter
 #define MAX 10241
 #define dlzka_stlpca 100
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * Declaracia funkcii * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -293,7 +292,7 @@ int main(int argc, char *argv[]) {
                 if (tabulka[0] != '\0' && rows == 1) {
                     // Ak sa v danom stlpci nenachadza cislo, funkcia vrati -1 co znaci chybu, inak funkcia na danych miestach zaokruhli cisla
                     if(Round(tabulka, stlpec, delimiter, command_stlpec, &dlzka_tabulky) == -1){
-                        fprintf(stderr, "%s %d%s", "V danom stlpci sa nenachadza cislo! Zle data na riadku:", riadok, "%d"); // todo tento error nedava zmysel
+                        fprintf(stderr, "%s %d", "V danom stlpci sa nenachadza cislo! Zle data na riadku:", riadok);
                         return -1;
                     }
                 }
@@ -312,7 +311,7 @@ int main(int argc, char *argv[]) {
                 if (tabulka[0] != '\0' && rows == 1) {
                     // Ak sa v danom stlpci nenachadza cislo, funkcia vrati -1 co znaci chybu, inak funkcia na danych miestach odstrani desatinne miesta
                     if(Int(tabulka, stlpec, delimiter, command_stlpec, &dlzka_tabulky) == -1){
-                        fprintf(stderr, "%s %d%s", "V danom stlpci sa nenachadza cislo! Zle data na riadku:", riadok, "%d"); // todo tento error nedava zmysel
+                        fprintf(stderr, "%s %d", "V danom stlpci sa nenachadza cislo! Zle data na riadku:", riadok);
                         return -1;
                     }
                 }
@@ -511,7 +510,7 @@ int main(int argc, char *argv[]) {
     }
     return 0;
 }
-
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *    Funkcie     * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 int nacitaj(char *tabulka, int *riadok, int *stlpec, char delimiter, char delimiter_array[], int *koniec_riadku) {
     char c = 0;
     int pocet_znakov = 0, i = 0, j = 0, chars_in_col = 0, pomocna_stlpec = 1, max_riadok = MAX, max_stlpec = dlzka_stlpca;
@@ -859,7 +858,7 @@ void copy(char *tabulka, int stlpec, char delimiter, int command_stlpec, int com
         cset(tabulka, stlpec, delimiter, command_stlpec_do, dlzka_tabulky, STR);
     }
 }
-// TODO skontrolovat swap je to take shady
+
 void swap(char *tabulka, int stlpec, char delimiter, int command_stlpec, int command_stlpec_do, int *dlzka_tabulky) {
     int i = 0, j = 0, kontrola = 1;
     char STR1[MAX] = {0}, STR2[MAX] = {0};
@@ -867,12 +866,6 @@ void swap(char *tabulka, int stlpec, char delimiter, int command_stlpec, int com
     if (command_stlpec <= stlpec && command_stlpec_do <= stlpec) {
         // While cyklus bezi dokym neprebehne cely riadok
         while (i < *dlzka_tabulky) {
-            // Ak narazime na delimiter posunieme znacenie stlpcov(kontrola) o jedno dopredu
-            if (tabulka[i] == delimiter) {
-                 ++kontrola;
-                // Posunieme sa z delimitera na dalsi char
-                i++;
-            }
             // ak narazime na stlpec ktory chceme prekopirovavat
             if (kontrola == command_stlpec) {
                 // Osetrenie pripadu kde kopirujeme posledny stlpec, cize narazime na \0, nie na delimiter
@@ -883,17 +876,15 @@ void swap(char *tabulka, int stlpec, char delimiter, int command_stlpec, int com
                 }
                 break;
             }
+            // Ak narazime na delimiter posunieme znacenie stlpcov(kontrola) o jedno dopredu
+            if (tabulka[i] == delimiter) {
+                ++kontrola;
+            }
             i++;
         }
         i = 0, j = 0, kontrola = 1;
         // While cyklus bezi dokym neprebehne cely riadok
         while (i < *dlzka_tabulky) {
-            // ak narazime na delimiter posunieme znacenie stlpcov(kontrola) o jedno dopredu
-            if (tabulka[i] == delimiter) {
-                ++kontrola;
-                // Posunieme sa z delimitera na dalsi char
-                i++;
-            }
             // Ak narazime na stlpec ktory chceme prekopirovavat
             if (kontrola == command_stlpec_do) {
                 // osetrenie pripadu kde kopirujeme posledny stlpec, cize narazime na \0, nie na delimiter
@@ -903,6 +894,10 @@ void swap(char *tabulka, int stlpec, char delimiter, int command_stlpec, int com
                     i++;
                 }
                 break;
+            }
+            // ak narazime na delimiter posunieme znacenie stlpcov(kontrola) o jedno dopredu
+            if (tabulka[i] == delimiter) {
+                ++kontrola;
             }
             i++;
         }
