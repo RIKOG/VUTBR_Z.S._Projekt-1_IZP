@@ -1,8 +1,6 @@
 /*
  * IDE CLion - Richard Gajdošík
  * Implementacia prveho projektu z predmetu IZP, zimny semester, skolsky rok 20/21
- * UPOZORNENIE, nakolko je v zadani napisane ze program sa vzdy bude pustat s -d dovolil som si logiku programu spravit tak, ze bude nacitavat iba ked narazi na -d (Aj ked to teraz po dopisani nedava zmysel)
- * Ospravedlnujem sa za skutocne velky main, no nakolko vsetko musi byt vzdy v jednom celku prislo mi zbytocne miesto 300 riadkoveho mainu mat spravenu 300 riadkovu funkciu
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Command list * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * irow R - vloží řádek tabulky před řádek R > 0 (insert-row).
  * arow - přidá nový řádek tabulky na konec tabulky (append-row).
